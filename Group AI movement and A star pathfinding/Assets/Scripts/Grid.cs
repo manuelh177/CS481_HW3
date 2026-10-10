@@ -8,6 +8,15 @@ public class Grid : MonoBehaviour
     public float nodeRadius;
     Node[,] grid;
 
+    private float nodeDiameter;
+    private int gridSizeX, gridSizeY;
+
+    void Start()
+    {
+        nodeDiameter = nodeRadius * 2;
+        gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
