@@ -131,6 +131,14 @@ public class GenerateRectangles : MonoBehaviour
         {
             if (activeObstacles[i] != null)
             {
+                Collider col = activeObstacles[i].GetComponent<Collider>();
+                if (col != null)
+                {
+                    col.enabled = false;
+                }
+                
+                activeObstacles[i].SetActive(false);
+                
                 if (Application.isPlaying)
                     Destroy(activeObstacles[i]);
                 else
