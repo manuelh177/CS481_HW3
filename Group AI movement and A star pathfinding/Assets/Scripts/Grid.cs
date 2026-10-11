@@ -3,6 +3,7 @@ using System.Collections;
 using System.Numerics;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
+using System.Collections.Generic;
 
 public class Grid : MonoBehaviour
 {
@@ -32,11 +33,30 @@ public class Grid : MonoBehaviour
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
-                grid[x, y] = new Node(walkable, worldPoint);
+                grid[x, y] = new Node(walkable, worldPoint, x, y);
             }
         }
     }
 
+    public List<Node> GetNeighbors(Node node)
+    {
+        List<Node> neighbors = new List<Node>();
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) continue;
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
+                {
+                    neighbors.Add(grid[checkX, checkY]);
+                }
+            }
+        }
+        return neighbors;
+    }
     public Node NodeFromWorldPoint(Vector3 worldPoint)
     {
         float percentX = (worldPoint.x + gridWorldSize.x / 2) / gridWorldSize.x;
@@ -49,6 +69,7 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
+    public List<Node> path;
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
@@ -57,6 +78,13 @@ public class Grid : MonoBehaviour
             foreach (Node n in grid)
             {
                 Gizmos.color = (n.walkable) ? Color.green : Color.red;
+                if (path != null)
+                {
+                    if (path.Contains(n))
+                    {
+                        Gizmos.color = Color.blue;
+                    }
+                }
                 Gizmos.DrawCube(n.worldPos, Vector3.one * (nodeDiameter - 0.02f));
             }
         }
