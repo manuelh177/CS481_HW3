@@ -37,6 +37,18 @@ public class Grid : MonoBehaviour
         }
     }
 
+    public Node NodeFromWorldPoint(Vector3 worldPoint)
+    {
+        float percentX = (worldPoint.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (worldPoint.y + gridWorldSize.y/2) / gridWorldSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        return grid[x, y];
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
