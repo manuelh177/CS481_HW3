@@ -513,7 +513,7 @@ MonoBehaviour:
   circleSprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   startZone: {fileID: 1510380258907591237}
   endZone: {fileID: 596084189370912159}
-  obstacleCount: 100
+  obstacleCount: 20
   minRadius: 0.3
   maxRadius: 0.8
   safePadding: 0.2
@@ -551,6 +551,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb60d25bb58894c11b029fba01fef2a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pathfinding
+--- !u!1 &1584426490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1584426492}
+  - component: {fileID: 1584426491}
+  m_Layer: 0
+  m_Name: EnvironmentNavigator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1584426491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584426490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41841bdf33eab4b8a818dbeacf9ad71a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnvironmentNavigator
+--- !u!4 &1584426492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584426490}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.15878, y: 1.43025, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1825217587 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 592954747653617408, guid: 908be330bfc1b4ca88fe1130c7684b0f, type: 3}
@@ -988,3 +1032,4 @@ SceneRoots:
   - {fileID: 1510380258907591236}
   - {fileID: 596084189370912158}
   - {fileID: 8474566066066722077}
+  - {fileID: 1584426492}
