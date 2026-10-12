@@ -487,6 +487,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 287738158}
     - target: {fileID: 6456585314289757684, guid: a0c300cb090699b4f92239d0c2217422, type: 3}
+      propertyPath: pathfinding
+      value: 
+      objectReference: {fileID: 100332854}
+    - target: {fileID: 6456585314289757684, guid: a0c300cb090699b4f92239d0c2217422, type: 3}
       propertyPath: navigationModeManager
       value: 
       objectReference: {fileID: 265046165}

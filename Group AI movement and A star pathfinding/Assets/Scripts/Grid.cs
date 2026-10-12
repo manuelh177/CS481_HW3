@@ -37,6 +37,19 @@ public class Grid : MonoBehaviour
             }
         }
     }
+    public void ResetPathfindingNodes()
+    {
+        if (grid == null)
+            return;
+
+        foreach (Node node in grid)
+        {
+            node.gCost = int.MaxValue;
+            node.hCost = 0;
+            node.parent = null;
+        }
+    }
+
 
     public List<Node> GetNeighbors(Node node)
     {

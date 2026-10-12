@@ -4,15 +4,31 @@ using UnityEngine.InputSystem;
 
 public class NavigationModeManager : MonoBehaviour
 {
+    public enum NavigationMode
+    {
+        AStar,
+        PotentialFields,
+        Combined
+    }
+
     [Header("Mode Settings")]
-    [SerializeField] private bool potentialFieldsMode = false;
+    [SerializeField] private NavigationMode currentMode = NavigationMode.AStar;
 
     [Header("References")]
     [SerializeField] private PathfindingController pathfindingController;
 
     public bool IsPotentialFieldsMode
     {
-        get { return potentialFieldsMode; }
+        get
+        {
+            return currentMode == NavigationMode.PotentialFields ||
+                   currentMode == NavigationMode.Combined;
+        }
+    }
+
+    public bool IsCombinedMode
+    {
+        get { return currentMode == NavigationMode.Combined; }
     }
 
     private void Start()
@@ -25,7 +41,9 @@ public class NavigationModeManager : MonoBehaviour
         if (Keyboard.current != null &&
             Keyboard.current.pKey.wasPressedThisFrame)
         {
-            potentialFieldsMode = !potentialFieldsMode;
+            currentMode = (NavigationMode)(
+                ((int)currentMode + 1) % 3
+            );
 
             UpdateMode();
         }
@@ -33,20 +51,13 @@ public class NavigationModeManager : MonoBehaviour
 
     private void UpdateMode()
     {
-        // Disable A* mouse controls during Potential Fields mode.
         if (pathfindingController != null)
         {
-            pathfindingController.enabled = !potentialFieldsMode;
+            pathfindingController.enabled =
+                currentMode == NavigationMode.AStar;
         }
 
-        if (potentialFieldsMode)
-        {
-            Debug.Log("Mode: Potential Fields");
-        }
-        else
-        {
-            Debug.Log("Mode: A* Pathfinding");
-        }
+        Debug.Log("Navigation Mode: " + currentMode);
     }
 
     private void OnGUI()
@@ -57,12 +68,16 @@ public class NavigationModeManager : MonoBehaviour
         style.fontStyle = FontStyle.Bold;
         style.normal.textColor = Color.black;
 
-        string modeText = potentialFieldsMode
-            ? "Mode: Potential Fields (P)"
-            : "Mode: A* Pathfinding (P)";
+        string modeText = currentMode switch
+        {
+            NavigationMode.AStar => "Mode: A* Pathfinding (P)",
+            NavigationMode.PotentialFields => "Mode: Potential Fields (P)",
+            NavigationMode.Combined => "Mode: A* + Potential Fields (P)",
+            _ => "Unknown Mode"
+        };
 
         GUI.Label(
-            new Rect(15, 10, 350, 40),
+            new Rect(15, 10, 450, 40),
             modeText,
             style
         );

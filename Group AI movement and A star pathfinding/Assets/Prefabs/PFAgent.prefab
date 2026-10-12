@@ -129,7 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PotentialFieldAgent
   moveSpeed: 3
   stoppingDistance: 0.3
-  waypointArrivalDistance: 1.2
+  waypointArrivalDistance: 0.3
   obstacleDetectionRadius: 0.7
   obstacleRepulsionStrength: 1.5
   obstacleLayer:

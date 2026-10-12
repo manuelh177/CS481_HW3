@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -6,7 +7,7 @@ public class PotentialFieldAgent : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float stoppingDistance = 0.15f;
-    [SerializeField] private float waypointArrivalDistance = 1.2f;
+    [SerializeField] private float waypointArrivalDistance = 0.3f;
 
     [Header("Obstacle Avoidance")]
     [SerializeField] private float obstacleDetectionRadius = 1.5f;
@@ -65,30 +66,37 @@ public class PotentialFieldAgent : MonoBehaviour
             ? waypointArrivalDistance
             : stoppingDistance;
 
-        if (distance <= arrivalDistance)
+        // Advance through reached waypoints without pausing.
+        while (distance <= arrivalDistance)
         {
             if (waypoints.Count > 0)
             {
                 targetPosition = waypoints.Dequeue();
+
+                direction = targetPosition - transform.position;
+                direction.z = 0f;
+
+                distance = direction.magnitude;
+
+                arrivalDistance = waypoints.Count > 0
+                    ? waypointArrivalDistance
+                    : stoppingDistance;
             }
             else
             {
                 hasTarget = false;
+                return;
             }
-
-            return;
         }
 
-        // Attractive force pulls toward the destination.
+        // Attractive force toward the current waypoint.
         Vector3 attractiveForce = direction.normalized;
 
-        // Repulsive force pushes away from nearby obstacles.
+        // Repulsive forces from obstacles and nearby agents.
         Vector3 obstacleRepulsion = CalculateObstacleRepulsion();
-
-        // Combine both forces.
-
         Vector3 agentRepulsion = CalculateAgentRepulsion();
 
+        // Combine the forces to determine movement direction.
         Vector3 combinedForce =
             attractiveForce + obstacleRepulsion + agentRepulsion;
 
@@ -98,15 +106,8 @@ public class PotentialFieldAgent : MonoBehaviour
         Vector3 movement =
             combinedForce.normalized * moveSpeed * Time.deltaTime;
 
-        // Prevent overshooting the destination.
-        movement = Vector3.ClampMagnitude(
-            movement,
-            Mathf.Max(0f, distance - arrivalDistance)
-        );
-
         transform.position += movement;
     }
-
 
     private Vector3 CalculateObstacleRepulsion()
     {
@@ -120,9 +121,12 @@ public class PotentialFieldAgent : MonoBehaviour
 
         foreach (Collider obstacle in nearbyObstacles)
         {
-            Vector3 closestPoint = obstacle.ClosestPoint(transform.position);
+            Vector3 closestPoint =
+                obstacle.ClosestPoint(transform.position);
 
-            Vector3 awayDirection = transform.position - closestPoint;
+            Vector3 awayDirection =
+                transform.position - closestPoint;
+
             awayDirection.z = 0f;
 
             float distance = awayDirection.magnitude;
@@ -135,19 +139,22 @@ public class PotentialFieldAgent : MonoBehaviour
             );
 
             totalRepulsion +=
-                awayDirection.normalized * strength * obstacleRepulsionStrength;
+                awayDirection.normalized *
+                strength *
+                obstacleRepulsionStrength;
         }
 
         return totalRepulsion;
     }
-
 
     private Vector3 CalculateAgentRepulsion()
     {
         Vector3 totalRepulsion = Vector3.zero;
 
         PotentialFieldAgent[] allAgents =
-            FindObjectsByType<PotentialFieldAgent>(FindObjectsSortMode.None);
+            FindObjectsByType<PotentialFieldAgent>(
+                FindObjectsSortMode.None
+            );
 
         foreach (PotentialFieldAgent otherAgent in allAgents)
         {
@@ -168,11 +175,11 @@ public class PotentialFieldAgent : MonoBehaviour
                 1f - (distance / agentDetectionRadius);
 
             totalRepulsion +=
-                awayDirection.normalized * strength * agentRepulsionStrength;
+                awayDirection.normalized *
+                strength *
+                agentRepulsionStrength;
         }
 
         return totalRepulsion;
     }
-
-
 }

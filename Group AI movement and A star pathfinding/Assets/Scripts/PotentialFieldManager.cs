@@ -24,6 +24,9 @@ public class PotentialFieldManager : MonoBehaviour
     [SerializeField] private NavigationModeManager navigationModeManager;
     [SerializeField] private Camera mainCamera;
 
+    [Header("A* Integration")]
+    [SerializeField] private Pathfinding pathfinding;
+
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color unselectedColor = Color.blue;
 
@@ -131,6 +134,7 @@ public class PotentialFieldManager : MonoBehaviour
         Vector3 targetPosition = ray.GetPoint(distance);
         targetPosition.z = 0f;
 
+
         foreach (GameObject agent in selectedAgents)
         {
             if (agent == null)
@@ -139,12 +143,47 @@ public class PotentialFieldManager : MonoBehaviour
             PotentialFieldAgent movement =
                 agent.GetComponent<PotentialFieldAgent>();
 
-            if (movement != null)
-            {
-                bool shiftHeld = Keyboard.current != null &&
-                    (Keyboard.current.leftShiftKey.isPressed ||
-                     Keyboard.current.rightShiftKey.isPressed);
+            if (movement == null)
+                continue;
 
+            bool shiftHeld = Keyboard.current != null &&
+                (Keyboard.current.leftShiftKey.isPressed ||
+                 Keyboard.current.rightShiftKey.isPressed);
+
+            if (navigationModeManager.IsCombinedMode)
+            {
+                if (pathfinding == null)
+                {
+                    Debug.LogWarning("A* Pathfinding reference is missing!");
+                    continue;
+                }
+
+                Vector3[] path = pathfinding.FindPathWaypoints(
+                    agent.transform.position,
+                    targetPosition
+                );
+
+                if (path == null || path.Length == 0)
+                {
+                    Debug.LogWarning("No A* path found for " + agent.name);
+                    continue;
+                }
+
+                // A* returns the starting position as its first waypoint.
+                // Skip it because the agent is already there.
+                movement.SetTarget(path.Length > 1 ? path[1] : targetPosition);
+
+                for (int i = 2; i < path.Length; i++)
+                {
+                    movement.AddWaypoint(path[i]);
+                }
+
+                // Use the exact clicked destination as the final target.
+                movement.AddWaypoint(targetPosition);
+            }
+            else
+            {
+                // Preserve the original Part 3 controls.
                 if (shiftHeld)
                 {
                     movement.AddWaypoint(targetPosition);
@@ -155,6 +194,7 @@ public class PotentialFieldManager : MonoBehaviour
                 }
             }
         }
+
 
         Debug.Log(
             "Moving " + selectedAgents.Count +

@@ -92,6 +92,12 @@ public class Pathfinding : MonoBehaviour
     Node startNode = grid.NodeFromWorldPoint(startPos);
     Node targetNode = grid.NodeFromWorldPoint(targetPos);
 
+    // Clear previous A* search information.
+    grid.ResetPathfindingNodes();
+
+    // The starting node has no travel cost.
+    startNode.gCost = 0;
+
     if (!startNode.walkable || !targetNode.walkable)
     {
         return null;
