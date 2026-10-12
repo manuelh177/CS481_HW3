@@ -7,8 +7,10 @@ public class GenerateRectangles : MonoBehaviour
     [Header("Grid Reference")]
     [SerializeField] private Grid pathfindingGrid;
 
-    [Header("Sprites")]
+    [Header("Sprites & Zones")]
     [SerializeField] private Sprite squareSprite;
+    [SerializeField] private BoxCollider2D startZone;
+    [SerializeField] private BoxCollider2D endZone;
 
     [Header("Spawn Settings")]
     [SerializeField] private int obstacleCount = 20;
@@ -16,6 +18,8 @@ public class GenerateRectangles : MonoBehaviour
     [SerializeField] private float maxWidth = 2.5f;
     [SerializeField] private float minHeight = 1f;
     [SerializeField] private float maxHeight = 3f;
+    [SerializeField] private float safePadding = 0.2f;
+    [SerializeField] private int maxPlacementAttempts = 300;
 
     [Header("Layer & Appearance")]
     [SerializeField] private int obstacleLayer = 6; // Layer 6 (Unwalkable)
@@ -43,28 +47,55 @@ public class GenerateRectangles : MonoBehaviour
         }
     }
 
+    public void SetObstacleCount(int count)
+    {
+        obstacleCount = count;
+    }
+
     [ContextMenu("Generate Obstacles")]
     public void GenerateObstacles()
     {
         ClearObstacles();
 
+        int spawned = 0;
+
         for (int i = 0; i < obstacleCount; i++)
         {
-            float width = Random.Range(minWidth, maxWidth);
-            float height = Random.Range(minHeight, maxHeight);
-            Vector2 size = new Vector2(width, height);
+            bool placed = false;
 
-            float halfW = width * 0.5f;
-            float halfH = height * 0.5f;
-            float randomX = Random.Range(spawnAreaMin.x + halfW, spawnAreaMax.x - halfW);
-            float randomY = Random.Range(spawnAreaMin.y + halfH, spawnAreaMax.y - halfH);
-            Vector2 candidatePos = new Vector2(randomX, randomY);
+            for (int attempt = 0; attempt < maxPlacementAttempts; attempt++)
+            {
+                float width = Random.Range(minWidth, maxWidth);
+                float height = Random.Range(minHeight, maxHeight);
+                Vector2 size = new Vector2(width, height);
 
-            GameObject obstacle = CreateOutlinedRectangle(candidatePos, size, i);
-            activeObstacles.Add(obstacle);
+                float halfW = width * 0.5f;
+                float halfH = height * 0.5f;
+                float randomX = Random.Range(spawnAreaMin.x + halfW, spawnAreaMax.x - halfW);
+                float randomY = Random.Range(spawnAreaMin.y + halfH, spawnAreaMax.y - halfH);
+                Vector2 candidatePos = new Vector2(randomX, randomY);
+
+                // Prevent overlap with Start or End zones
+                if (IsOverlappingBox(candidatePos, size, startZone) || 
+                    IsOverlappingBox(candidatePos, size, endZone))
+                {
+                    continue;
+                }
+
+                GameObject obstacle = CreateOutlinedRectangle(candidatePos, size, spawned);
+                activeObstacles.Add(obstacle);
+                placed = true;
+                spawned++;
+                break;
+            }
+
+            if (!placed)
+            {
+                Debug.LogWarning($"Could not place rectangle {i + 1} within {maxPlacementAttempts} attempts.");
+            }
         }
 
-        // Flush transform changes into the 3D physics scene before regenerating the grid
+        // Synchronize transform changes with the 3D physics tree
         Physics.SyncTransforms();
 
         if (pathfindingGrid != null)
@@ -102,7 +133,7 @@ public class GenerateRectangles : MonoBehaviour
         innerRenderer.color = rectangleColor;
         innerRenderer.sortingOrder = baseSortingOrder + 1;
 
-        // 3D Box Collider for Physics.CheckSphere detection
+        // 3D Box Collider for Physics.CheckSphere
         BoxCollider col = root.AddComponent<BoxCollider>();
         col.size = new Vector3(outlineSize.x, outlineSize.y, 1f);
 
@@ -130,6 +161,18 @@ public class GenerateRectangles : MonoBehaviour
             }
         }
         activeObstacles.Clear();
+    }
+
+    private bool IsOverlappingBox(Vector2 center, Vector2 size, BoxCollider2D box)
+    {
+        if (box == null) return false;
+
+        Bounds b = box.bounds;
+        Vector2 halfExtents = (size * 0.5f) + new Vector2(safePadding, safePadding);
+        bool overlapX = Mathf.Abs(center.x - b.center.x) <= (halfExtents.x + b.extents.x);
+        bool overlapY = Mathf.Abs(center.y - b.center.y) <= (halfExtents.y + b.extents.y);
+
+        return overlapX && overlapY;
     }
 
     private void OnDrawGizmosSelected()

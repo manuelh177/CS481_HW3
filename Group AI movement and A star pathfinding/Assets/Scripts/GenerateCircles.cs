@@ -7,13 +7,17 @@ public class GenerateCircles : MonoBehaviour
     [Header("Grid Reference")]
     [SerializeField] private Grid pathfindingGrid;
 
-    [Header("Sprites")]
+    [Header("Sprites & Zones")]
     [SerializeField] private Sprite circleSprite;
+    [SerializeField] private BoxCollider2D startZone;
+    [SerializeField] private BoxCollider2D endZone;
 
     [Header("Spawn Settings")]
     [SerializeField] private int obstacleCount = 20;
     [SerializeField] private float minRadius = 0.5f;
     [SerializeField] private float maxRadius = 1.8f;
+    [SerializeField] private float safePadding = 0.2f;
+    [SerializeField] private int maxPlacementAttempts = 300;
 
     [Header("Layer & Appearance")]
     [SerializeField] private int obstacleLayer = 6; // Layer 6 (Unwalkable)
@@ -41,23 +45,50 @@ public class GenerateCircles : MonoBehaviour
         }
     }
 
+    public void SetObstacleCount(int count)
+    {
+        obstacleCount = count;
+    }
+
     [ContextMenu("Generate Obstacles")]
     public void GenerateObstacles()
     {
         ClearObstacles();
 
+        int spawned = 0;
+
         for (int i = 0; i < obstacleCount; i++)
         {
-            float radius = Random.Range(minRadius, maxRadius);
-            float randomX = Random.Range(spawnAreaMin.x + radius, spawnAreaMax.x - radius);
-            float randomY = Random.Range(spawnAreaMin.y + radius, spawnAreaMax.y - radius);
-            Vector2 candidatePos = new Vector2(randomX, randomY);
+            bool placed = false;
 
-            GameObject obstacle = CreateOutlinedCircle(candidatePos, radius, i);
-            activeObstacles.Add(obstacle);
+            for (int attempt = 0; attempt < maxPlacementAttempts; attempt++)
+            {
+                float radius = Random.Range(minRadius, maxRadius);
+                float randomX = Random.Range(spawnAreaMin.x + radius, spawnAreaMax.x - radius);
+                float randomY = Random.Range(spawnAreaMin.y + radius, spawnAreaMax.y - radius);
+                Vector2 candidatePos = new Vector2(randomX, randomY);
+
+                // Prevent overlap with Start or End zones
+                if (IsOverlappingBox(candidatePos, radius, startZone) || 
+                    IsOverlappingBox(candidatePos, radius, endZone))
+                {
+                    continue;
+                }
+
+                GameObject obstacle = CreateOutlinedCircle(candidatePos, radius, spawned);
+                activeObstacles.Add(obstacle);
+                placed = true;
+                spawned++;
+                break;
+            }
+
+            if (!placed)
+            {
+                Debug.LogWarning($"Could not find a valid spot for circle {i + 1} after {maxPlacementAttempts} attempts.");
+            }
         }
 
-        // Flush transform changes into the 3D physics scene before regenerating the grid
+        // Synchronize transform changes with the 3D physics tree
         Physics.SyncTransforms();
 
         if (pathfindingGrid != null)
@@ -97,7 +128,7 @@ public class GenerateCircles : MonoBehaviour
         innerRenderer.color = circleColor;
         innerRenderer.sortingOrder = baseSortingOrder + 1;
 
-        // 3D Sphere Collider for Physics.CheckSphere detection
+        // 3D Sphere Collider for Physics.CheckSphere
         SphereCollider col = root.AddComponent<SphereCollider>();
         col.radius = totalRadius;
 
@@ -110,7 +141,6 @@ public class GenerateCircles : MonoBehaviour
         {
             if (activeObstacles[i] != null)
             {
-                // Disable immediately so the physics engine stops registering it before destruction
                 Collider col = activeObstacles[i].GetComponent<Collider>();
                 if (col != null)
                 {
@@ -126,6 +156,19 @@ public class GenerateCircles : MonoBehaviour
             }
         }
         activeObstacles.Clear();
+    }
+
+    private bool IsOverlappingBox(Vector2 circleCenter, float circleRadius, BoxCollider2D box)
+    {
+        if (box == null) return false;
+
+        Bounds bounds = box.bounds;
+        float closestX = Mathf.Clamp(circleCenter.x, bounds.min.x, bounds.max.x);
+        float closestY = Mathf.Clamp(circleCenter.y, bounds.min.y, bounds.max.y);
+        Vector2 closestPoint = new Vector2(closestX, closestY);
+
+        float distance = Vector2.Distance(circleCenter, closestPoint);
+        return distance < (circleRadius + safePadding);
     }
 
     private void OnDrawGizmosSelected()
