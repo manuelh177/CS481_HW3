@@ -469,67 +469,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &576289686
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 576289688}
-  - component: {fileID: 576289687}
-  m_Layer: 0
-  m_Name: OfficeEntityManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &576289687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 576289686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e815814fbef994eab804481cd161e3d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OfficeEntityManager
-  pathfinding: {fileID: 100332854}
-  grid: {fileID: 1597551523}
-  startZone: {fileID: 714341092}
-  endZone: {fileID: 1276871012}
-  mainCamera: {fileID: 287738158}
-  officeCenters: []
-  officeTag: Office
-  entitySprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  entityCount: 5
-  entitySize: 0.4
-  defaultColor: {r: 0.2, g: 0.7, b: 1, a: 1}
-  selectedColor: {r: 1, g: 0, b: 1, a: 1}
-  squareSprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  officePointColor: {r: 0, g: 1, b: 0, a: 1}
-  pathColor: {r: 0, g: 0, b: 1, a: 1}
-  targetColor: {r: 1, g: 0, b: 0, a: 1}
-  visualSortingOrder: 10
---- !u!4 &576289688
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 576289686}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.15878, y: 1.43025, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &714341092 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 6634844730056492818, guid: 64a0b03a955b14f90ae8d282aaec5c54, type: 3}
@@ -893,6 +832,83 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64a0b03a955b14f90ae8d282aaec5c54, type: 3}
+--- !u!1001 &4944817890717168804
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 206928375204199136, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_Name
+      value: OfficeEntityManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4481793668275438340, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: grid
+      value: 
+      objectReference: {fileID: 1597551523}
+    - target: {fileID: 4481793668275438340, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: endZone
+      value: 
+      objectReference: {fileID: 1276871012}
+    - target: {fileID: 4481793668275438340, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: startZone
+      value: 
+      objectReference: {fileID: 714341092}
+    - target: {fileID: 4481793668275438340, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 287738158}
+    - target: {fileID: 4481793668275438340, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: pathfinding
+      value: 
+      objectReference: {fileID: 100332854}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.15878
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.43025
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175428149829708360, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 879bc8e7fc2db4965a8be749557094f8, type: 3}
 --- !u!1001 &7262835913976602159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1204,4 +1220,4 @@ SceneRoots:
   - {fileID: 60372422}
   - {fileID: 8990054897391586379}
   - {fileID: 7611124781089668029}
-  - {fileID: 576289688}
+  - {fileID: 4944817890717168804}
